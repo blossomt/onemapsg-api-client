@@ -8,11 +8,11 @@ Python Wrapper Client for the OneMap API
 
 
 
-Docs here: https://docs.onemap.sg/
+Docs here: https://www.onemap.gov.sg/apidocs/apidocs
 
 PyPI Link: <https://pypi.org/project/onemapsg/>
 
-Register for an API key here: https://developers.onemap.sg/signup/
+Register for an API key here: https://www.onemap.gov.sg/apidocs/register
 
 
 
@@ -37,16 +37,15 @@ Client.search("Dragon View Park")
  'totalNumPages': 1,
  'pageNum': 1,
  'results': [{'SEARCHVAL': 'DRAGON VIEW PARK',
-   'BLK_NO': '',
-   'ROAD_NAME': 'NIL',
-   'BUILDING': 'DRAGON VIEW PARK',
-   'ADDRESS': 'DRAGON VIEW PARK SINGAPORE',
-   'POSTAL': 'NIL',
-   'X': '27415.382888752',
-   'Y': '31015.7030415982',
-   'LATITUDE': '1.29676950856585',
-   'LONGITUDE': '103.828065538017',
-   'LONGTITUDE': '103.828065538017'}]}
+  'BLK_NO': '18', 
+  'ROAD_NAME': 'JALAN MUTIARA', 
+  'BUILDING': 'DRAGON VIEW PARK', 
+  'ADDRESS': '18 JALAN MUTIARA DRAGON VIEW PARK SINGAPORE 249197', 
+  'POSTAL': '249197', 
+  'X': '27475.1315859295', 
+  'Y': '31009.1610406674', 
+  'LATITUDE': '1.2967103460777', 
+  'LONGITUDE': '103.828602406382'}]}
 '''
 ```
 

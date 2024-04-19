@@ -8,7 +8,7 @@ class OneMapClient():
         self.email = email
         self.password = password
 
-        self.url_base = "https://developers.onemap.sg"
+        self.url_base = "https://www.onemap.gov.sg"
 
         self.expiry = 0
         self.token = None
@@ -21,7 +21,7 @@ class OneMapClient():
 
         json_data = {"email":email, "password":password}
         response = requests.post(
-            self.url_base + "/privateapi/auth/post/getToken",
+            self.url_base + "/api/auth/post/getToken",
             json=json_data,
             headers={"Content-Type":"application/json"}
         )
@@ -61,7 +61,7 @@ class OneMapClient():
             return
 
     def search(self, search_val, return_geom=True, get_addr_details=True, page_num=1):
-        '''API Documentation: https://docs.onemap.sg/#search'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         try:
             if return_geom:
                 return_geom = "Y"
@@ -73,7 +73,7 @@ class OneMapClient():
             else:
                 get_addr_details = "N"
 
-            return json.loads(requests.get(self.url_base + "/commonapi/search",
+            return json.loads(requests.get(self.url_base + "/api/common/elastic/search",
                                            params={'searchVal': search_val,
                                                    'returnGeom': return_geom,
                                                    'getAddrDetails': get_addr_details,
@@ -83,7 +83,7 @@ class OneMapClient():
             return
 
     def reverse_geocode_SVY21(self, coordinates, buffer=10, address_type="All", other_features=False):
-        '''API Documentation: https://docs.onemap.sg/#reverse-geocode-svy21'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
@@ -99,9 +99,9 @@ class OneMapClient():
 
             location = "{},{}".format(coordinates[0], coordinates[1])
 
-            return json.loads(requests.get(self.url_base + "/privateapi/commonsvc/revgeocodexy",
+            return json.loads(requests.get(self.url_base + "/api/public/revgeocodexy",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'location': location,
-                                                   'token': self.token,
                                                    'buffer': buffer,
                                                    'addressType': address_type,
                                                    'otherFeatures': other_features}).text)
@@ -110,7 +110,7 @@ class OneMapClient():
             return
 
     def reverse_geocode_WGS84(self, coordinates, buffer=10, address_type="All", other_features=False):
-        '''API Documentation: https://docs.onemap.sg/#reverse-geocode-wgs84'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
@@ -126,9 +126,9 @@ class OneMapClient():
 
             location = "{},{}".format(coordinates[0], coordinates[1])
 
-            return json.loads(requests.get(self.url_base + "/privateapi/commonsvc/revgeocode",
+            return json.loads(requests.get(self.url_base + "/api/public/revgeocodexy",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'location': location,
-                                                   'token': self.token,
                                                    'buffer': buffer,
                                                    'addressType': address_type,
                                                    'otherFeatures': other_features}).text)
@@ -137,8 +137,10 @@ class OneMapClient():
             return
 
     def WGS84_to_EPSG(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/4326to3857",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/4326to3857",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'latitude': coordinates[0],
                                                    'longitude': coordinates[1]}).text)
         except Exception as e:
@@ -146,8 +148,10 @@ class OneMapClient():
             return
 
     def WGS84_to_SVY21(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/4326to3414",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/4326to3414",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'latitude': coordinates[0],
                                                    'longitude': coordinates[1]}).text)
         except Exception as e:
@@ -155,8 +159,10 @@ class OneMapClient():
             return
 
     def SVY21_to_EPSG(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/3414to3857",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/3414to3857",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'X': coordinates[0],
                                                    'Y': coordinates[1]}).text)
         except Exception as e:
@@ -164,8 +170,10 @@ class OneMapClient():
             return
 
     def SVY21_to_WGS84(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/3414to4326",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/3414to4326",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'X': coordinates[0],
                                                    'Y': coordinates[1]}).text)
         except Exception as e:
@@ -173,8 +181,10 @@ class OneMapClient():
             return
 
     def EPSG_to_SVY21(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/3857to3414",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/3857to3414",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'X': coordinates[0],
                                                    'Y': coordinates[1]}).text)
         except Exception as e:
@@ -182,8 +192,10 @@ class OneMapClient():
             return
 
     def EPSG_to_WGS84(self, coordinates):
+        self.check_expired_and_refresh_token()[0]
         try:
-            return json.loads(requests.get(self.url_base + "/commonapi/convert/3857to4326",
+            return json.loads(requests.get(self.url_base + "/api/common/convert/3857to4326",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'X': coordinates[0],
                                                    'Y': coordinates[1]}).text)
         except Exception as e:
@@ -191,32 +203,32 @@ class OneMapClient():
             return
 
     def check_theme_status(self, query_name, date_time):
-        '''API Documentation: https://docs.onemap.sg/#check-theme-status'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/themesvc/checkThemeStatus",
+            return json.loads(requests.get(self.url_base + "/api/public/themesvc/checkThemeStatus",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'queryName': query_name,
-                                                   'token': self.token,
                                                    'dateTime': date_time}).text)
         except Exception as e:
             print(e)
             return
 
     def get_theme_info(self, query_name):
-        '''API Documentation: https://docs.onemap.sg/#get-theme-info'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/themesvc/getThemeInfo",
-                                           params={'queryName': query_name,
-                                                   'token': self.token}).text)
+            return json.loads(requests.get(self.url_base + "/api/public/themesvc/getThemeInfo",
+                                           headers={'Authorization': 'Bearer ' + self.token},
+                                           params={'queryName': query_name}).text)
         except Exception as e:
             print(e)
             return
 
     def get_all_themes_info(self, more_info=False):
-        '''API Documentation: https://docs.onemap.sg/#get-all-themes-info'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
@@ -225,343 +237,344 @@ class OneMapClient():
             else:
                 more_info = "N"
 
-            return json.loads(requests.get(self.url_base + "/privateapi/themesvc/getAllThemesInfo",
-                                           params={'moreInfo': more_info,
-                                                   'token': self.token}).text)
+            return json.loads(requests.get(self.url_base + "/api/public/themesvc/getAllThemesInfo",
+                                           headers={'Authorization': 'Bearer ' + self.token},
+                                           params={'moreInfo': more_info}).text)
         except Exception as e:
             print(e)
             return
-
+        
     def retrieve_theme(self, query_name, extents=None):
-        '''API Documentation: https://docs.onemap.sg/#retrieve_theme'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
             if extents is not None:
                 extents = "{},{},{},{}".format(extents[0], extents[1], extents[2], extents[3])
 
-            return json.loads(requests.get(self.url_base + "/privateapi/themesvc/retrieveTheme",
+            return json.loads(requests.get(self.url_base + "/api/public/themesvc/retrieveTheme",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'queryName': query_name,
-                                                   'extents': extents,
-                                                   'token': self.token}).text)
+                                                   'extents': extents}).text)
         except Exception as e:
             print(e)
             return
 
     def get_all_planning_areas(self, year=None):
-        '''API Documentation: https://docs.onemap.sg/#planning-area'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getAllPlanningarea",
-                                           params={'year': year,
-                                                   'token': self.token}).text)
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getAllPlanningarea",
+                                           headers={'Authorization': 'Bearer ' + self.token},
+                                           params={'year': year}).text)
         except Exception as e:
             print(e)
             return
 
     def get_planning_area_names(self, year=None):
-        '''API Documentation: https://docs.onemap.sg/#names-of-planning-area'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getPlanningareaNames",
-                                           params={'year': year,
-                                                   'token': self.token}).text)
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getPlanningareaNames",
+                                           headers={'Authorization': 'Bearer ' + self.token},
+                                           params={'year': year}).text)
         except Exception as e:
             print(e)
             return
 
     def get_planning_area_bounds(self, coordinates, year=None):
-        '''API Documentation: https://docs.onemap.sg/#planning-area-query'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getPlanningarea",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getPlanningarea",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
                                                    'lat': coordinates[0],
-                                                   'long': coordinates[1],
-                                                   'token': self.token}).text)
+                                                   'long': coordinates[1]}).text)
         except Exception as e:
             print(e)
             return
 
     def get_economic_statuses(self, year, planning_area, gender=None):
-        '''API Documentation: https://docs.onemap.sg/#economic-status-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getEconomicStatus",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getEconomicStatus",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
                                                    'planningArea': planning_area,
-                                                   'gender': gender,
-                                                   'token': self.token}).text)
+                                                   'gender': gender}).text)
         except Exception as e:
             print(e)
             return
 
     def get_education_attendance(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#education-status-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getEducationAttending",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getEducationAttending",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_ethnic_groups(self, year, planning_area, gender=None):
-        '''API Documentation: https://docs.onemap.sg/#ethnic-distribution-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getEthnicGroup",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getEthnicGroup",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
                                                    'planningArea': planning_area,
-                                                   'gender': gender,
-                                                   'token': self.token}).text)
+                                                   'gender': gender}).text)
         except Exception as e:
             print(e)
             return
 
     def get_household_monthly_work_income(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#work-income-for-household-monthly'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getHouseholdMonthlyIncomeWork",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getHouseholdMonthlyIncomeWork",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_household_sizes(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#household-size-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getHouseholdSize",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getHouseholdSize",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_household_structures(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#household-structure-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getHouseholdStructure",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getHouseholdStructure",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_work_income(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#income-from-work-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getIncomeFromWork",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getIncomeFromWork",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_industries(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#industry-of-population-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getIndustry",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getIndustry",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_language_literacy(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#language-literacy-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getLanguageLiterate",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getLanguageLiterate",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_marital_statuses(self, year, planning_area, gender=None):
-        '''API Documentation: https://docs.onemap.sg/#marital-status-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getMaritalStatus",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getMaritalStatus",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
                                                    'planningArea': planning_area,
-                                                   'gender': gender,
-                                                   'token': self.token}).text)
+                                                   'gender': gender}).text)
         except Exception as e:
             print(e)
             return
 
     def get_modes_of_transport_to_school(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#mode-of-transports-to-school-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getModeOfTransportSchool",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getModeOfTransportSchool",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_modes_of_transport_to_work(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#mode-of-transports-to-work-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getModeOfTransportWork",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getModeOfTransportWork",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_occupations(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#occupation-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getOccupation",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getOccupation",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_age_groups(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#age-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getPopulationAgeGroup",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getPopulationAgeGroup",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_religious_groups(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#religion-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getReligion",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getReligion",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_spoken_languages(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#spoken-language-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getSpokenAtHome",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getSpokenAtHome",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_tenancy(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#tenancy-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getTenancy",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getTenancy",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_dwelling_types(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#dwelling-type-household-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getTypeOfDwellingHousehold",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getTypeOfDwellingHousehold",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_population_by_dwelling_types(self, year, planning_area):
-        '''API Documentation: https://docs.onemap.sg/#dwelling-type-population-data'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
-            return json.loads(requests.get(self.url_base + "/privateapi/popapi/getTypeOfDwellingPop",
+            return json.loads(requests.get(self.url_base + "/api/public/popapi/getTypeOfDwellingPop",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'year': year,
-                                                   'planningArea': planning_area,
-                                                   'token': self.token}).text)
+                                                   'planningArea': planning_area}).text)
         except Exception as e:
             print(e)
             return
 
     def get_route(self, start_coordinates, end_coordinates, route_type):
-        '''API Documentation: https://docs.onemap.sg/#route'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
             start_coordinates = "{},{}".format(start_coordinates[0], start_coordinates[1])
             end_coordinates = "{},{}".format(end_coordinates[0], end_coordinates[1])
 
-            return json.loads(requests.get(self.url_base + "/privateapi/routingsvc/route",
+            return json.loads(requests.get(self.url_base + "/api/public/routingsvc/route",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'start': start_coordinates,
                                                    'end': end_coordinates,
-                                                   'routeType': route_type,
-                                                   'token': self.token}).text)
+                                                   'routeType': route_type}).text)
         except Exception as e:
             print(e)
             return
 
     def get_public_transport_route(self, start_coordinates, end_coordinates, date, time, mode, max_walk_distance=None, num_itineraries=1):
-        '''API Documentation: https://docs.onemap.sg/#route'''
+        '''API Documentation: https://www.onemap.gov.sg/apidocs/apidocs'''
         self.check_expired_and_refresh_token()[0]
 
         try:
             start_coordinates = "{},{}".format(start_coordinates[0], start_coordinates[1])
             end_coordinates = "{},{}".format(end_coordinates[0], end_coordinates[1])
 
-            return json.loads(requests.get(self.url_base + "/privateapi/routingsvc/route",
+            return json.loads(requests.get(self.url_base + "/api/public/routingsvc/route",
+                                           headers={'Authorization': 'Bearer ' + self.token},
                                            params={'start': start_coordinates,
                                                    'end': end_coordinates,
                                                    'routeType': 'pt',
@@ -569,8 +582,7 @@ class OneMapClient():
                                                    'time': time,
                                                    'mode': mode,
                                                    'maxWalkDistance': max_walk_distance,
-                                                   'numItneraries': num_itineraries,
-                                                   'token': self.token}).text)
+                                                   'numItneraries': num_itineraries}).text)
 
         except Exception as e:
             print(e)
@@ -578,7 +590,7 @@ class OneMapClient():
 
     def generate_static_map(self, layer_chosen, location, zoom, width, height, polygons=None, lines=None, points=None, color=None, fill_color=None):
         '''
-        API Documentation: https://docs.onemap.sg/#static-map
+        API Documentation: https://www.onemap.gov.sg/apidocs/apidocs
 
         Polygon Format
         --------------
@@ -612,10 +624,10 @@ class OneMapClient():
                 height = 512
 
             if type(location) == tuple or type(location) == list:
-                return requests.get(self.url_base + "/commonapi/staticmap/getStaticImage",
+                return requests.get(self.url_base + "/api/staticmap/getStaticImage",
                                     params={'layerchosen': layer_chosen,
-                                            'lat': location[0],
-                                            'lng': location[1],
+                                            'latitude': location[0],
+                                            'longitude': location[1],
                                             'zoom': zoom,
                                             'width': width,
                                             'height': height,
@@ -625,7 +637,7 @@ class OneMapClient():
                                             'color': color,
                                             'fillColor': fill_color}).content
             else:
-                return requests.get(self.url_base + "/commonapi/staticmap/getStaticImage",
+                return requests.get(self.url_base + "/api/staticmap/getStaticImage",
                                     params={'layerchosen': layer_chosen,
                                             'postal': location,
                                             'zoom': zoom,
